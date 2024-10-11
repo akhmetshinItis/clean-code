@@ -22,8 +22,7 @@ public class ExtractTagsPairsMethodTest
 
         // Act
         var tags = _parser.ExtractTags(input);
-        var result = _parser.ExtractTagsPairs(tags);
-
+        var result = _parser.ExtractTagsPairs(tags, input);
         // Assert
         Assert.That(result.Count, Is.EqualTo(1));
         Assert.That(result[0].Item1.TagStyle, Is.EqualTo(TagStyle.Bold));
@@ -37,11 +36,11 @@ public class ExtractTagsPairsMethodTest
     public void ExtractTagsPairs_ShouldReturnSingleItalicPair_WhenSingleUnderscoreIsUsed()
     {
         // Arrange
-        var input = "_italic __bold__ italic_";
+        var input = "1_a12_3";
 
         // Act
         var tags = _parser.ExtractTags(input);
-        var result = _parser.ExtractTagsPairs(tags);
+        var result = _parser.ExtractTagsPairs(tags, input);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(1));
@@ -60,7 +59,7 @@ public class ExtractTagsPairsMethodTest
 
         // Act
         var tags = _parser.ExtractTags(input);
-        var result = _parser.ExtractTagsPairs(tags);
+        var result = _parser.ExtractTagsPairs(tags, input);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(2));
@@ -83,7 +82,7 @@ public class ExtractTagsPairsMethodTest
 
         // Act
         var tags = _parser.ExtractTags(input);
-        var result = _parser.ExtractTagsPairs(tags);
+        var result = _parser.ExtractTagsPairs(tags, input);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(2));

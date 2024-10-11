@@ -22,7 +22,7 @@ public class TagExtractorTests
 
         // Act
         var result = _parser.ExtractTags(input);
-        var result2 = _parser.ExtractTagsPairs(result);
+        var result2 = _parser.ExtractTagsPairs(result, input);
 
         // Assert
         Assert.That(result.Count, Is.EqualTo(2));
