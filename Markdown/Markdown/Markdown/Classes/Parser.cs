@@ -29,12 +29,12 @@ public class Parser : IParser
         //пофиксил верхнее
         //проверяем экранирование - ProcessEscapeCharacters()
         
-        //проверить внутри слова если да, то пробелы не проверять
+        //проверить внутри слова если да, то пробелы не проверять 
         //проверяем пробелы 
-        //проверить __ _ _ __ и _ __ __ _ (второе не должно работать)
+        //проверить __ _ _ __ и _ __ __ _ (второе не должно работать) - готово
         
         //проверяем цифры - SkipTagWhenInDigitSeq()
-        
+        //header в список собрать
         
         return parsedTokens;
     }
@@ -101,7 +101,20 @@ public class Parser : IParser
             var tagStack = tagStackDict[tag.TagStyle];
             if (tagStack.Count() > 0)
             {
-                tagPairsList.Add((tagStack.Pop(), tag));
+                if (tagPairsList.Count != 0 && AreTagsIntersecting(tagPairsList.Last(), (tagStack.Peek(), tag)))
+                {
+                    tagStackDict[tag.TagStyle].Pop();
+                    tagStackDict[tag.TagStyle].Push(tag);
+                }
+                else if (tagPairsList.Count != 0 && IsBoldInItalic(tagPairsList, tag, tagStack.Peek()))
+                {
+                    tagPairsList[^1] = (tagStack.Pop(), tag);
+                }
+                else
+                {
+                    tagPairsList.Add((tagStack.Pop(), tag));
+                }
+                
             }
             else
             {
@@ -132,7 +145,7 @@ public class Parser : IParser
         return result;
     }
 
-    private List<(Tag, Tag)> SkipTagWhenInDigitSeq(List<(Tag, Tag)> tags, string text)
+    private List<(Tag, Tag)> SkipTagWhenInDigitSeq(List<(Tag, Tag)> tags, string text) //переделать в прием List<(Tag, Tag)>()
     {
         var tagsListWithValidInDigitTag = new List<(Tag, Tag)>();
         foreach (var tagPair in tags)
@@ -149,6 +162,19 @@ public class Parser : IParser
 
         return tagsListWithValidInDigitTag;
     }
-    
-    
+
+    private bool AreTagsIntersecting((Tag, Tag) correctPair, (Tag, Tag) intersectingPair)
+    {
+        return correctPair.Item2.Index < intersectingPair.Item2.Index
+               && correctPair.Item1.Index < intersectingPair.Item1.Index
+               && correctPair.Item2.Index > intersectingPair.Item1.Index;
+    }
+
+    private bool IsBoldInItalic(List<(Tag, Tag)> tagPairsList, Tag tag, Tag openItalic)
+    {
+        return tagPairsList[^1].Item1.TagStyle == TagStyle.Bold
+               && tag.TagStyle == TagStyle.Italic
+               && openItalic.Index < tagPairsList[^1].Item1.Index
+               && tag.Index > tagPairsList[^1].Item2.Index;
+    }
 }

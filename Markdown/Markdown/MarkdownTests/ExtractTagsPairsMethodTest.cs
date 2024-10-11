@@ -37,14 +37,14 @@ public class ExtractTagsPairsMethodTest
     public void ExtractTagsPairs_ShouldReturnSingleItalicPair_WhenSingleUnderscoreIsUsed()
     {
         // Arrange
-        var input = "_it_a_l_ic_";
+        var input = "_italic __bold__ italic_";
 
         // Act
         var tags = _parser.ExtractTags(input);
         var result = _parser.ExtractTagsPairs(tags);
 
         // Assert
-        Assert.That(result.Count, Is.EqualTo(2));
+        Assert.That(result.Count, Is.EqualTo(1));
         // Assert.That(result[0].Item1.TagStyle, Is.EqualTo(TagStyle.Italic));
         // Assert.That(result[0].Item2.TagStyle, Is.EqualTo(TagStyle.Italic));
         
