@@ -7,27 +7,14 @@ namespace Markdown.Classes;
 
 public class Parser : IParser
 {
-    public List<Token> Parse(string text)
+    public (List<(Tag, Tag)>, List<Tag>) Parse(string text)
     {
         List<Token> parsedTokens = new List<Token>();
         var allTagsList = ExtractTags(text);
-        var tagsWithoutEscapeCharacters = ProcessEscapeCharacters(allTagsList);
+        var singleTags = new List<Tag>();
+        var tagsWithoutEscapeCharacters = ProcessEscapeCharacters(allTagsList, singleTags);
         var tagsPairsList = ExtractTagsPairs(tagsWithoutEscapeCharacters, text);
-        var singleTags = allTagsList.Select(tag => !tag.IsPaired);
-        //проверяем парность - ExtractTagsPairs()
-        //проверяем вложенность - ExtractTagsPairs()
-        //проверяем корректность вложенности - ExtractTagsPairs()
-        //пофиксить _text__text_ ситуацию получаем <em>text__text</em> для _text_text_text_ <em>text</em>text<em>text</em>
-        //пофиксил верхнее
-        //проверяем экранирование - ProcessEscapeCharacters()
-        
-        //проверяем пробелы готово нужен рефакторинг
-        //проверить __ _ _ __ и _ __ __ _ (второе не должно работать) - готово
-        
-        //проверяем цифры - SkipTagWhenInDigitSeq()
-        //header в список собрать
-        
-        return parsedTokens;
+        return (tagsPairsList, singleTags);
     }
 
     public List<Tag> ExtractTags(string text)
@@ -122,7 +109,7 @@ public class Parser : IParser
     
     
     
-    private List<Tag> ProcessEscapeCharacters(List<Tag> tags)
+    private List<Tag> ProcessEscapeCharacters(List<Tag> tags, List<Tag> singleTags)
     {
         var result = new List<Tag>();
         for (int i = 0; i < tags.Count; i++)
@@ -131,9 +118,11 @@ public class Parser : IParser
                 && i + 1 < tags.Count
                 && tags[i + 1].Index == i + 1)
             {
+                singleTags.Add(tags[i]);
                 i++;
                 continue;
             }
+            if(!tags[i].IsPaired) singleTags.Add(tags[i]);
             result.Add(tags[i]);
         }
 
@@ -170,14 +159,4 @@ public class Parser : IParser
                && tag.TagStyle == TagStyle.Italic
                && openItalic.Index < tagPairsList[^1].Item1.Index
                && tag.Index > tagPairsList[^1].Item2.Index;
-
-
-    // private bool IsInWord(Tag openingTag, Tag closingTag, string text)
-    //     => openingTag.Index > 0
-    //        && closingTag.Index + closingTag.Length < text.Length
-    //        && (text[openingTag.Index - 1] != ' '
-    //            || text[openingTag.Index - 1] != '\n')
-    //        && (text[closingTag.Index + closingTag.Length] != ' '
-    //            || text[closingTag.Index + closingTag.Length] != '\n');
-
 }
