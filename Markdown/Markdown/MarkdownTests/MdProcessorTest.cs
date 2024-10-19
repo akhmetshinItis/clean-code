@@ -21,7 +21,7 @@
 //     }
 //
 // }
-
+// I will refactor code below later
 using System.Diagnostics;
 using System.Text;
 using FluentAssertions;
@@ -42,9 +42,10 @@ public class Tests
     [TestCase("aa_a_a", "aa<em>a</em>a")]
     [TestCase("a_aa _aa", "a_aa _aa")]
     [TestCase("_1_", "<em>1</em>")]
+    [TestCase("numbers_12_3 ", "numbers_12_3 ")]
     [TestCase("\\a_ 1_", @"\a_ 1_")]
-    [TestCase ("\\_Вот это\\_", "_Вот это_")]
-    [TestCase("\\\\_вот это будет выделено тегом_", @"\<em>вот это будет выделено тегом</em>")]
+    [TestCase ("\\_This is it\\_", "_This is it_")]
+    [TestCase("\\\\_this will be highlighted with a tag_", @"\<em>this will be highlighted with a tag</em>")]
     public void RenderIsCorrect(string input, string expectedOutput)
     {
         new MdProcessor().GetHtmlFromMarkdown(input).Should().Be(expectedOutput);

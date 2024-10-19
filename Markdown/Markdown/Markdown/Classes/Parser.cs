@@ -8,23 +8,25 @@ namespace Markdown.Classes;
 public class Parser : IParser
 {
     private string Text;
+
     public (List<(Tag, Tag)>, List<Tag>) Parse(string text)
     {
         Text = text;
         List<Token> parsedTokens = new List<Token>();
-        var allTagsList = ExtractTags(text);
+        var allTagsList = ExtractTags();
         var singleTags = new List<Tag>();
-        var tagsWithoutEscapeCharacters = ProcessEscapeCharacters(allTagsList, singleTags, text);
-        var tagsPairsList = ExtractTagsPairs(tagsWithoutEscapeCharacters, text);
-        return (tagsPairsList, singleTags);
+        var tagsWithoutEscapeChars = ProcessEscapeChars(allTagsList, singleTags);
+        var tagPairsList = ExtractTagPairs(tagsWithoutEscapeChars);
+        var digitProcessedTagPairs = SkipDigitTags(tagPairsList);
+        return (digitProcessedTagPairs, singleTags);
     }
 
-    public List<Tag> ExtractTags(string text)
+    public List<Tag> ExtractTags()
     {
         var extractedTags = new List<Tag>();
-        for (int i = 0; i < text.Length; i++)
+        for (int i = 0; i < Text.Length; i++)
         {
-            var tag = ExtractTag(text[i], i, text);
+            var tag = ExtractTag(Text[i], i);
             if (tag is null)
             {
                 continue;
@@ -37,11 +39,11 @@ public class Parser : IParser
         return extractedTags;
     }
 
-    private Tag ExtractTag(char symbol, int index, string text)
+    private Tag ExtractTag(char symbol, int index)
     {
         if (symbol == '_')
         {
-            if (index + 1 < text.Length && text[index + 1] == '_')
+            if (index + 1 < Text.Length && Text[index + 1] == '_')
             {
                 return new Tag(TagStyle.Bold, 2, true, index);
             }
@@ -49,7 +51,7 @@ public class Parser : IParser
             return new Tag(TagStyle.Italic, 1, true, index);
         }
 
-        if (symbol == '#' && (index == 0 || text[index - 1] == '\n'))
+        if (symbol == '#' && (index == 0 || Text[index - 1] == '\n'))
         {
             return new Tag(TagStyle.Header, 1, false, index);
         }
@@ -63,7 +65,7 @@ public class Parser : IParser
 
     }
 
-    public List<(Tag, Tag)> ExtractTagsPairs(List<Tag> tags, string text)
+    public List<(Tag, Tag)> ExtractTagPairs(List<Tag> tags)
     {
         var tagStackDict = new Dictionary<TagStyle, Stack<Tag>>();
         var tagPairsList = new List<(Tag, Tag)>();
@@ -77,8 +79,8 @@ public class Parser : IParser
                 if (tagPairsList.Count != 0 && AreTagsIntersecting(tagPairsList.Last(), (tagStack.Peek(), tag)))
                 {
                     tagStackDict[tag.TagStyle].Pop();
-                    if (text.Length > tag.Index + tag.Length && (text[tag.Index + tag.Length] != ' '
-                                                                 && text[tag.Index + tag.Length] != '\n'))
+                    if (Text.Length > tag.Index + tag.Length && (Text[tag.Index + tag.Length] != ' '
+                                                                 && Text[tag.Index + tag.Length] != '\n'))
                     {
                         tagStackDict[tag.TagStyle].Push(tag);
                     }
@@ -86,32 +88,31 @@ public class Parser : IParser
                 }
                 else if (tagPairsList.Count != 0 && IsBoldInItalic(tagPairsList, tag, tagStack.Peek()))
                 {
-                    if(text[tag.Index - 1] == ' ' 
-                       || text[tag.Index - 1] == '\n') continue;
+                    if(Text[tag.Index - 1] == ' ' 
+                       || Text[tag.Index - 1] == '\n') continue;
                     tagPairsList[^1] = (tagStack.Pop(), tag);
                 }
                 else
                 {
-                    if (text[tag.Index - 1] != ' ' && text[tag.Index - 1] != '\n')
+                    if (Text[tag.Index - 1] != ' ' && Text[tag.Index - 1] != '\n')
                     { 
                         tagPairsList.Add((tagStack.Pop(), tag));
                     }
                 }
             }
-
+    
             else
             {
-                if(text.Length > tag.Index + tag.Length && (text[tag.Index + tag.Length] != ' ' 
-                                                            && text[tag.Index + tag.Length] != '\n')) tagStack.Push(tag);
+                if(Text.Length > tag.Index + tag.Length && (Text[tag.Index + tag.Length] != ' ' 
+                                                            && Text[tag.Index + tag.Length] != '\n')) tagStack.Push(tag);
             }
         }
-        var tagPairsList1 =  SkipTagWhenInDigitSeq(tagPairsList, text); //для проверки, исправлю костыль
-        return tagPairsList1;
+        return tagPairsList;
     }
-    
-    
-    
-    private List<Tag> ProcessEscapeCharacters(List<Tag> tags, List<Tag> singleTags, string text)
+
+
+
+    private List<Tag> ProcessEscapeChars(List<Tag> tags, List<Tag> singleTags)
     {
         var result = new List<Tag>();
         for (int i = 0; i < tags.Count; i++)
@@ -125,32 +126,38 @@ public class Parser : IParser
                 continue;
             }
 
-            if (tags[i].TagStyle == TagStyle.EscapeCharacter //проверка случая \\\\ экранирование экранирования
-                && text.Length > tags[i].Index + 1
-                && text[tags[i].Index + 1] == '\\')
+            if (tags[i].TagStyle == TagStyle.EscapeCharacter //проверка случая "\\\\" экранирование экранирования
+                && Text.Length > tags[i].Index + 1
+                && Text[tags[i].Index + 1] == '\\')
             {
                 singleTags.Add(tags[i]);
                 continue;
             }
-            if(!tags[i].IsPaired && tags[i].TagStyle != TagStyle.EscapeCharacter) {singleTags.Add(tags[i]);}
+
+            if (!tags[i].IsPaired && tags[i].TagStyle != TagStyle.EscapeCharacter)
+            {
+                singleTags.Add(tags[i]);
+            }
+
             result.Add(tags[i]);
         }
 
         return result;
     }
 
-    private List<(Tag, Tag)> SkipTagWhenInDigitSeq(List<(Tag, Tag)> tags, string text) 
+    private List<(Tag, Tag)> SkipDigitTags(List<(Tag, Tag)> tags)
     {
         var tagsListWithValidInDigitTag = new List<(Tag, Tag)>();
         foreach (var tagPair in tags)
         {
             if (
-                tagPair.Item2.Index + tagPair.Item2.Length < text.Length
-                && Char.IsDigit(text[tagPair.Item1.Index + 1])
-                && Char.IsDigit(text[tagPair.Item2.Index + tagPair.Item2.Length ]))
+                tagPair.Item2.Index + tagPair.Item2.Length < Text.Length
+                && Char.IsDigit(Text[tagPair.Item1.Index + 1])
+                && Char.IsDigit(Text[tagPair.Item2.Index + tagPair.Item2.Length]))
             {
                 continue;
             }
+
             tagsListWithValidInDigitTag.Add(tagPair);
         }
 
@@ -164,9 +171,9 @@ public class Parser : IParser
                && correctPair.Item2.Index > intersectingPair.Item1.Index;
     }
 
-    private bool IsBoldInItalic(List<(Tag, Tag)> tagPairsList, Tag tag, Tag openItalic) 
+    private bool IsBoldInItalic(List<(Tag, Tag)> tagPairsList, Tag tag, Tag openItalic)
         => tagPairsList[^1].Item1.TagStyle == TagStyle.Bold
-               && tag.TagStyle == TagStyle.Italic
-               && openItalic.Index < tagPairsList[^1].Item1.Index
-               && tag.Index > tagPairsList[^1].Item2.Index;
+           && tag.TagStyle == TagStyle.Italic
+           && openItalic.Index < tagPairsList[^1].Item1.Index
+           && tag.Index > tagPairsList[^1].Item2.Index;
 }
