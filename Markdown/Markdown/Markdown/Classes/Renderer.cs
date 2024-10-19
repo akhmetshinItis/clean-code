@@ -55,9 +55,9 @@ public class Renderer : IRenderer
                 htmlText.Append($"</{tagsInHtml[tag.TagStyle]}>");
                 i += tag.Length - 1;
             }
-            else if (singleTagsDict.ContainsKey(i) && singleTags[i].TagStyle == TagStyle.EscapeCharacter)
+            else if (singleTagsDict.TryGetValue(i, out tag) && tag.TagStyle == TagStyle.EscapeCharacter)
             {
-                i += singleTags[i].Length - 1;
+                i += tag.Length - 1;
             }
             else
             {

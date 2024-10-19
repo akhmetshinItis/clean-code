@@ -7,12 +7,14 @@ namespace Markdown.Classes;
 
 public class Parser : IParser
 {
+    private string Text;
     public (List<(Tag, Tag)>, List<Tag>) Parse(string text)
     {
+        Text = text;
         List<Token> parsedTokens = new List<Token>();
         var allTagsList = ExtractTags(text);
         var singleTags = new List<Tag>();
-        var tagsWithoutEscapeCharacters = ProcessEscapeCharacters(allTagsList, singleTags);
+        var tagsWithoutEscapeCharacters = ProcessEscapeCharacters(allTagsList, singleTags, text);
         var tagsPairsList = ExtractTagsPairs(tagsWithoutEscapeCharacters, text);
         return (tagsPairsList, singleTags);
     }
@@ -28,7 +30,7 @@ public class Parser : IParser
                 continue;
             }
 
-            i += tag.Length;
+            i += tag.Length - 1;
             extractedTags.Add(tag);
         }
 
@@ -109,20 +111,28 @@ public class Parser : IParser
     
     
     
-    private List<Tag> ProcessEscapeCharacters(List<Tag> tags, List<Tag> singleTags)
+    private List<Tag> ProcessEscapeCharacters(List<Tag> tags, List<Tag> singleTags, string text)
     {
         var result = new List<Tag>();
         for (int i = 0; i < tags.Count; i++)
         {
             if (tags[i].TagStyle == TagStyle.EscapeCharacter
                 && i + 1 < tags.Count
-                && tags[i + 1].Index == i + 1)
+                && tags[i + 1].Index == tags[i].Index + 1)
             {
                 singleTags.Add(tags[i]);
                 i++;
                 continue;
             }
-            if(!tags[i].IsPaired && tags[i].TagStyle != TagStyle.EscapeCharacter) singleTags.Add(tags[i]);
+
+            if (tags[i].TagStyle == TagStyle.EscapeCharacter //проверка случая \\\\ экранирование экранирования
+                && text.Length > tags[i].Index + 1
+                && text[tags[i].Index + 1] == '\\')
+            {
+                singleTags.Add(tags[i]);
+                continue;
+            }
+            if(!tags[i].IsPaired && tags[i].TagStyle != TagStyle.EscapeCharacter) {singleTags.Add(tags[i]);}
             result.Add(tags[i]);
         }
 
