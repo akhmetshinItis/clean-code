@@ -100,7 +100,7 @@ public class Parser : IParser
             else
             {
                 if(text.Length > tag.Index + tag.Length && (text[tag.Index + tag.Length] != ' ' 
-                       && text[tag.Index + tag.Length] != '\n')) tagStack.Push(tag);
+                                                            && text[tag.Index + tag.Length] != '\n')) tagStack.Push(tag);
             }
         }
         var tagPairsList1 =  SkipTagWhenInDigitSeq(tagPairsList, text); //для проверки, исправлю костыль
@@ -122,14 +122,14 @@ public class Parser : IParser
                 i++;
                 continue;
             }
-            if(!tags[i].IsPaired) singleTags.Add(tags[i]);
+            if(!tags[i].IsPaired && tags[i].TagStyle != TagStyle.EscapeCharacter) singleTags.Add(tags[i]);
             result.Add(tags[i]);
         }
 
         return result;
     }
 
-    private List<(Tag, Tag)> SkipTagWhenInDigitSeq(List<(Tag, Tag)> tags, string text) //переделать в прием List<(Tag, Tag)>()
+    private List<(Tag, Tag)> SkipTagWhenInDigitSeq(List<(Tag, Tag)> tags, string text) 
     {
         var tagsListWithValidInDigitTag = new List<(Tag, Tag)>();
         foreach (var tagPair in tags)
