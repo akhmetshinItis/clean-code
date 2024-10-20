@@ -74,8 +74,14 @@ public class Parser : IParser
             if (!tag.IsPaired) continue;
             if (!tagStackDict.ContainsKey(tag.TagStyle)) tagStackDict[tag.TagStyle] = new Stack<Tag>();
             var tagStack = tagStackDict[tag.TagStyle];
-            if (tagStack.Count() > 0)
+            if (tagStack.Count > 0)
             {
+                if (tag.Index <= tagStack.Peek().Index + tagStack.Peek().Length) //проверка для случая когда между тегами нет символов
+                {
+                    tagStack.Pop();
+                    continue;
+                }
+                
                 if (tagPairsList.Count != 0 && AreTagsIntersecting(tagPairsList.Last(), (tagStack.Peek(), tag)))
                 {
                     tagStackDict[tag.TagStyle].Pop();

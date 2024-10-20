@@ -1,15 +1,15 @@
-﻿using Markdown.Classes;
-using Markdown.Interfaces;
-
-namespace Markdown;
+﻿namespace Markdown.Classes;
 
 public class MdProcessor
 {
-    private IRenderer _renderer = new Renderer();
-    private IParser _parser = new Parser();
-    static void Main(string[] args)
+    public string GetHtmlFromMarkdown(string text)
+    {
+        var allTagsFromText = new Parser().Parse(text);
+        return new Renderer().Render(allTagsFromText, text);
+    }
+
+    public static void Main()
     {
         
     }
-    
 }

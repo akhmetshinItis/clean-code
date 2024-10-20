@@ -10,7 +10,7 @@ public class Renderer : IRenderer
     {
         { TagStyle.Bold,  "strong"},
         { TagStyle.Italic, "em"},
-
+    
     };
         
     
@@ -29,7 +29,12 @@ public class Renderer : IRenderer
         }
         
         var isHeader = singleTagsDict.TryGetValue(0, out var header) && header.TagStyle == TagStyle.Header;
-        var htmlText = isHeader ?  new StringBuilder().Append("<h1>") : new StringBuilder();
+        var htmlText = new StringBuilder();
+        
+        if (isHeader)
+        {
+            htmlText.Append("<h1>");
+        }
 
         foreach (var tagPair in tagPairs)
         {
@@ -43,6 +48,7 @@ public class Renderer : IRenderer
             {
                 htmlText.Append("<h1>");
                 isHeader = true;
+                i += header.Length;
             }
             
             if (tagStartIndexes.TryGetValue(i, out var tag))
@@ -64,9 +70,10 @@ public class Renderer : IRenderer
                 htmlText.Append(text[i]);
             }
             
-            if ((text[i] == '\n' || i == text.Length - 1) && isHeader)
+            if (((i < text.Length - 1 && text[i + 1] == '\n') || i == text.Length - 1) && isHeader)
             {
                 htmlText.Append("</h1>");
+                isHeader = false;
             }
             
         }
