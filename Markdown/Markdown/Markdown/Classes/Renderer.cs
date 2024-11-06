@@ -18,7 +18,6 @@ public class Renderer : IRenderer
     {
         var tagPairs = tags.Item1;
         var singleTags = tags.Item2;
-        var lines = text.Split('\n');
         var tagStartIndexes= new Dictionary<int, Tag>();
         var tagFinishIndexes = new Dictionary<int, Tag>();
         var singleTagsDict = new Dictionary<int, Tag>();

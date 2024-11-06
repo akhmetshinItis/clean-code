@@ -12,7 +12,6 @@ public class Parser : IParser
     public (List<(Tag, Tag)>, List<Tag>) Parse(string text)
     {
         Text = text;
-        List<Token> parsedTokens = new List<Token>();
         var allTagsList = ExtractTags();
         var singleTags = new List<Tag>();
         var tagsWithoutEscapeChars = ProcessEscapeChars(allTagsList, singleTags);
@@ -82,21 +81,22 @@ public class Parser : IParser
                     continue;
                 }
                 
-                if (tagPairsList.Count != 0 && AreTagsIntersecting(tagPairsList.Last(), (tagStack.Peek(), tag)))
+                if (tagPairsList.Count != 0 && 
+                    AreTagsIntersecting(tagPairsList.Last(), (tagStack.Peek(), tag))) //проверяем случай когда тег открывается в нем открывается другой потом первый тег закрывается, а второй тег остается открытым
                 {
                     tagStackDict[tag.TagStyle].Pop();
                     if (Text.Length > tag.Index + tag.Length && (Text[tag.Index + tag.Length] != ' '
-                                                                 && Text[tag.Index + tag.Length] != '\n'))
+                                                                 && Text[tag.Index + tag.Length] != '\n')) //проверяем пробелы для корректности тега
                     {
                         tagStackDict[tag.TagStyle].Push(tag);
                     }
                         
                 }
-                else if (tagPairsList.Count != 0 && IsBoldInItalic(tagPairsList, tag, tagStack.Peek()))
+                if (tagPairsList.Count != 0 && IsBoldInItalic(tagPairsList, tag, tagStack.Peek())) //проверяем случай когда Bold оказывается внутри Italic
                 {
                     if(Text[tag.Index - 1] == ' ' 
                        || Text[tag.Index - 1] == '\n') continue;
-                    tagPairsList[^1] = (tagStack.Pop(), tag);
+                    tagPairsList[^1] = (tagStack.Pop(), tag); //меняем последний элемент в списке если он Bold и при этом оказался внутри тега Italic на текущий тег Italic
                 }
                 else
                 {
@@ -177,7 +177,7 @@ public class Parser : IParser
                && correctPair.Item2.Index > intersectingPair.Item1.Index;
     }
 
-    private bool IsBoldInItalic(List<(Tag, Tag)> tagPairsList, Tag tag, Tag openItalic)
+    private bool IsBoldInItalic(List<(Tag, Tag)> tagPairsList, Tag tag, Tag openItalic) 
         => tagPairsList[^1].Item1.TagStyle == TagStyle.Bold
            && tag.TagStyle == TagStyle.Italic
            && openItalic.Index < tagPairsList[^1].Item1.Index
