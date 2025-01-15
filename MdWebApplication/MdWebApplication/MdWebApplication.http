@@ -1,0 +1,6 @@
+@MdWebApplication_HostAddress = http://localhost:5156
+
+GET {{MdWebApplication_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
