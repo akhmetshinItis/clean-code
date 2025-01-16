@@ -22,11 +22,15 @@ namespace DataAccess.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("DataAccess.Models.Document", b =>
+            modelBuilder.Entity("DataAccess.Models.DocumentEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("FileUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -38,7 +42,7 @@ namespace DataAccess.Migrations
                     b.ToTable("Documents");
                 });
 
-            modelBuilder.Entity("DataAccess.Models.User", b =>
+            modelBuilder.Entity("DataAccess.Models.UserEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -61,9 +65,9 @@ namespace DataAccess.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("DataAccess.Models.Document", b =>
+            modelBuilder.Entity("DataAccess.Models.DocumentEntity", b =>
                 {
-                    b.HasOne("DataAccess.Models.User", "User")
+                    b.HasOne("DataAccess.Models.UserEntity", "User")
                         .WithMany("Documents")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -72,7 +76,7 @@ namespace DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DataAccess.Models.User", b =>
+            modelBuilder.Entity("DataAccess.Models.UserEntity", b =>
                 {
                     b.Navigation("Documents");
                 });

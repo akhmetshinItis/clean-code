@@ -10,7 +10,7 @@ public class DocumentConfiguration : IEntityTypeConfiguration<DocumentEntity>
     {
         builder.HasKey(d => d.Id);
         builder
-            .HasOne(u => u.UserEntity)
+            .HasOne(u => u.User)
             .WithMany(d => d.Documents);
     }
 }

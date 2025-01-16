@@ -28,6 +28,10 @@ services.AddScoped<IJwtProvider, JwtProvider>();
 services.AddScoped<IPasswordHasher, PasswordHasher>();
 services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
 services.AddApiAuthentification(configuration);
+builder.Services.AddSingleton<MinioService>();
+builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
+builder.Services.AddScoped<DocumentService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
