@@ -8,6 +8,7 @@ public class DocumentEntity
     /// URL документа в MinIO
     /// </summary>
     public string FileUrl { get; set; }
+    public string FileName { get; set; }
 
     public UserEntity User { get; set; }
 }

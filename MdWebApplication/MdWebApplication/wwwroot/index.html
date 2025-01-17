@@ -28,45 +28,11 @@
     </div>
 </div>
 
-<script>
-    // Инициализация CodeMirror для Markdown
-    const markdownEditor = CodeMirror.fromTextArea(document.getElementById("markdown-editor"), {
-        mode: "markdown",
-        lineNumbers: true,
-        theme: "material",
-    });
+<!-- Кнопка для скачивания документа -->
+<div>
+    <button id="download-btn" style="margin-top: 20px;">Download Document</button>
+</div>
 
-    // Инициализация CodeMirror для HTML
-    const htmlEditor = CodeMirror.fromTextArea(document.getElementById("html-editor"), {
-        mode: "xml",
-        lineNumbers: true,
-        readOnly: true,
-        theme: "material",
-    });
-
-    // Функция для автоматической конвертации Markdown в HTML
-    markdownEditor.on("change", async () => {
-        const markdownInput = markdownEditor.getValue(); // Получаем содержимое Markdown редактора
-        try {
-            const response = await fetch('/api/Md/convert', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ markdown: markdownInput }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                htmlEditor.setValue(data.html); // Устанавливаем результат в HTML редактор
-            } else {
-                const error = await response.json();
-                console.error('Error:', error.error);
-            }
-        } catch (err) {
-            console.error('Failed to convert Markdown:', err);
-        }
-    });
-</script>
+<script src="/js/index-js.js"></script>
 </body>
 </html>

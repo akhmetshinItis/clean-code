@@ -29,6 +29,8 @@ public class UserController : ControllerBase
     {
         var token = await _usersService.Login(request.Login, request.Password);
         Response.Cookies.Append("tasty-cookies", token);
-        return Ok(token);
+        var id = await _usersService.GetUserId(request.Login);
+        Response.Cookies.Append("userId", id.ToString());
+        return Ok();
     }
 }

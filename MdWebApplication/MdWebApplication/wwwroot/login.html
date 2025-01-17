@@ -52,34 +52,8 @@
         <input type="password" name="password" placeholder="Password" required>
         <button type="submit">Login</button>
     </form>
-
-    <script>
-        document.getElementById('login-form').addEventListener('submit', async function(event) {
-            event.preventDefault();
-
-            const formData = new FormData(this);
-            const data = {
-                login: formData.get('login'),
-                password: formData.get('password')
-            };
-
-            const response = await fetch('/api/User/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-
-            // if (response.ok) {
-            //     const result = await response.json();
-            //     console.log('Login successful:', result);
-            // } else {
-            //     console.error('Login failed:', response.status, response.statusText);
-            // }
-        });
-    </script>
     <a href="/register" style="display: block; text-align: center; margin-top: 10px;">Go to Registration</a>
 </div>
 </body>
+<script src="/js/login.js"></script>
 </html>

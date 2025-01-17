@@ -48,9 +48,18 @@ public class DocumentController : ControllerBase
     public async Task<IActionResult> DownloadDocumentAsync(Guid userId, Guid fileId)
     {
         var user = await _usersRepository.GetById(userId);
+        if (user == null)
+        {
+            return Unauthorized(new { error = "User not found" });
+        }
 
         var filename = $"{user.UserName}/{fileId}";
         var document = await _documentService.DownloadDocument(filename);
-        return Ok(document);
+        if (document == null)
+        {
+            return NotFound(new { error = "Document not found" });
+        }
+
+        return Ok(document);  // Вернуть содержимое файла (например, как текст)
     }
 }

@@ -42,4 +42,9 @@ public class UserService : IUsersService
         
         return token;
     }
+
+    public async Task<int> GetUserId(string login)
+    {
+        return _usersRepository.GetByLogin(login).Id;
+    }
 }
