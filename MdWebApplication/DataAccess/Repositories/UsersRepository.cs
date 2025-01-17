@@ -30,11 +30,17 @@ public class UsersRepository : IUsersRepository
             .ToListAsync();
     }
 
-    public async Task<UserEntity> GetById(Guid id)
+    public async Task<User> GetById(Guid id)
     {
-        return await _dbContext.Users
+        var userEntity = await _dbContext.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == id);
+        return new User
+        {
+            Id = id,
+            UserName = userEntity.UserName,
+            PasswordHash = userEntity.PasswordHash
+        };
     }
 
     public async Task Add(Guid id, string userName, string login, string passwordHash, List<DocumentEntity> documents)

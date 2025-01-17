@@ -1,6 +1,6 @@
-namespace DataAccess.Models;
+namespace Core.Models;
 
-public class DocumentEntity
+public class Document
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
@@ -8,7 +8,4 @@ public class DocumentEntity
     /// URL документа в MinIO
     /// </summary>
     public string FileUrl { get; set; }
-    public string FileName { get; set; }
-
-    public UserEntity User { get; set; }
 }
