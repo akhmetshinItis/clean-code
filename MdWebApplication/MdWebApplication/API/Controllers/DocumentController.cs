@@ -22,7 +22,7 @@ public class DocumentController : ControllerBase
     }
 
     [HttpPost("upload")]
-    public async Task<IActionResult> UploadDocumentAsync([FromForm] string file, [FromQuery] Guid userId)
+    public async Task<IActionResult> UploadDocumentAsync([FromForm] string file, string fileName, [FromQuery] Guid userId)
     {
         if (string.IsNullOrEmpty(file))
         {
@@ -33,9 +33,8 @@ public class DocumentController : ControllerBase
         {
             var user = await _usersRepository.GetById(userId);
             var userName = user.UserName;
-            var fileId = Guid.NewGuid();
-            var filename = $"{userName}/{fileId}";
-            await _documentService.UploadDocumentAsync(filename, file, user.Id, fileId);
+            var filename = $"{userName}/{fileName}";
+            await _documentService.UploadDocumentAsync(filename, file, user.Id);
             return Ok("File uploaded successfully.");
         }
         catch (Exception ex)
@@ -45,7 +44,7 @@ public class DocumentController : ControllerBase
     }
 
     [HttpGet("download")]
-    public async Task<IActionResult> DownloadDocumentAsync(Guid userId, Guid fileId)
+    public async Task<IActionResult> DownloadDocumentAsync(Guid userId, string fileName)
     {
         var user = await _usersRepository.GetById(userId);
         if (user == null)
@@ -53,7 +52,7 @@ public class DocumentController : ControllerBase
             return Unauthorized(new { error = "User not found" });
         }
 
-        var filename = $"{user.UserName}/{fileId}";
+        var filename = $"{user.UserName}/{fileName}";
         var document = await _documentService.DownloadDocument(filename);
         if (document == null)
         {

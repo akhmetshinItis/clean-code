@@ -14,11 +14,12 @@ public class DocumentRepository : IDocumentRepository
         _dbContext = dbContext;
     }
     
-    public async Task AddDocumentAsync(Guid userId, Guid fileId, string fileUrl)
+    public async Task AddDocumentAsync(Guid userId, string fileName, string fileUrl)
     {
         var document = new DocumentEntity
         {
-            Id = fileId,
+            Id = Guid.NewGuid(),
+            FileName = fileName,
             UserId = userId,
             FileUrl = fileUrl
         };

@@ -4,5 +4,5 @@ namespace MdWebApplication.Interfaces.Repositories;
 
 public interface IDocumentRepository
 {
-    Task AddDocumentAsync(Guid userId, Guid fileId, string fileUrl);
+    Task AddDocumentAsync(Guid userId, string fileName, string fileUrl);
 }
