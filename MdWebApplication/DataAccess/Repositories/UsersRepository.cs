@@ -87,11 +87,22 @@ public class UsersRepository : IUsersRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<User> GetByLogin(string login)
+    public async Task<User?> GetByLoginAsync(string login)
     {
+        if (string.IsNullOrWhiteSpace(login))
+        {
+            throw new ArgumentException("Логин не может быть пустым или содержать только пробелы.", nameof(login));
+        }
+
         var userEntity = await _dbContext.Users
             .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Login == login) ?? throw new Exception("No such user");
+            .FirstOrDefaultAsync(u => u.Login == login);
+
+        if (userEntity == null)
+        {
+            return null;
+        }
+
         return new User
         {
             Id = userEntity.Id,
@@ -100,4 +111,5 @@ public class UsersRepository : IUsersRepository
             UserName = userEntity.UserName
         };
     }
+
 }

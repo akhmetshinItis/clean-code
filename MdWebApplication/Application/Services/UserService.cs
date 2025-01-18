@@ -29,7 +29,7 @@ public class UserService : IUsersService
 
     public async Task<string> Login(string login, string password)
     {
-        var user = await _usersRepository.GetByLogin(login);
+        var user = await _usersRepository.GetByLoginAsync(login);
 
         var result = _passwordHasher.Verify(password, user.PasswordHash);
 
@@ -43,8 +43,9 @@ public class UserService : IUsersService
         return token;
     }
 
-    public async Task<int> GetUserId(string login)
+    public async Task<Guid> GetUserId(string login)
     {
-        return _usersRepository.GetByLogin(login).Id;
+        var user =  _usersRepository.GetByLoginAsync(login).Result.Id;
+        return user;
     }
 }

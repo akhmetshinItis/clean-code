@@ -22,16 +22,26 @@ public class DocumentController : ControllerBase
     }
 
     [HttpPost("upload")]
-    public async Task<IActionResult> UploadDocumentAsync([FromForm] string file, string fileName, [FromQuery] Guid userId)
+    public async Task<IActionResult> UploadDocumentAsync([FromForm] string file, [FromForm] string fileName, [FromQuery] Guid userId)
     {
         if (string.IsNullOrEmpty(file))
         {
             return BadRequest("File content cannot be null or empty.");
         }
 
+        if (string.IsNullOrEmpty(fileName))
+        {
+            return BadRequest("File name cannot be null or empty.");
+        }
+
         try
         {
             var user = await _usersRepository.GetById(userId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
             var userName = user.UserName;
             var filename = $"{userName}/{fileName}";
             await _documentService.UploadDocumentAsync(filename, file, user.Id);
@@ -43,8 +53,9 @@ public class DocumentController : ControllerBase
         }
     }
 
+
     [HttpGet("download")]
-    public async Task<IActionResult> DownloadDocumentAsync(Guid userId, string fileName)
+    public async Task<IActionResult> DownloadDocumentAsync([FromQuery]Guid userId, [FromQuery]string fileName)
     {
         var user = await _usersRepository.GetById(userId);
         if (user == null)
@@ -59,6 +70,10 @@ public class DocumentController : ControllerBase
             return NotFound(new { error = "Document not found" });
         }
 
-        return Ok(document);  // Вернуть содержимое файла (например, как текст)
+        return Ok(document);
     }
+
+    
+    // [HttpGet("all")]
+    // public async Task<IActionResult> GetAllDocuments(Guid us)
 }
