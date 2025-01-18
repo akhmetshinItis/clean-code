@@ -15,7 +15,7 @@ public class DocumentService
         _documentRepository = documentRepository;
     }
 
-    public async Task UploadDocumentAsync(string fileName, string file, Guid userId, Guid fileId)
+    public async Task UploadDocumentAsync(string fileName, string file, Guid userId)
     {
         if (string.IsNullOrEmpty(file))
         {
@@ -36,7 +36,7 @@ public class DocumentService
                 var fileUrl = _minioService.GetFileUrl(fileName);
 
                 // Сохраняем информацию о документе в базе данных через репозиторий
-                await _documentRepository.AddDocumentAsync(userId, fileId, fileUrl);
+                await _documentRepository.AddDocumentAsync(userId, fileName, fileUrl);
             }
         }
     }
