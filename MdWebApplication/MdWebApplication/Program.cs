@@ -16,6 +16,7 @@ var services = builder.Services;
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 services.AddControllers();
+Console.WriteLine(configuration.GetConnectionString("AppDbContext"));
 services.AddDbContext<AppDbContext>(
     options =>
     {
@@ -46,6 +47,5 @@ app.UseAuthorization();
 app.UseStaticFiles();
 
 app.MapCustomRoutes();
-
 app.MapControllers();
 app.Run();
