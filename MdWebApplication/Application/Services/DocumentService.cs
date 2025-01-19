@@ -35,7 +35,6 @@ public class DocumentService
             {
                 // Генерация URL MinIO для документа
                 var fileUrl = _minioService.GetFileUrl(minioFileName);
-
                 // Сохраняем информацию о документе в базе данных через репозиторий
                 await _documentRepository.AddDocumentAsync(userId, fileName, fileUrl);
             }

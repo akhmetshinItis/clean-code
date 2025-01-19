@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Application.Interfaces.Services;
 using Core.Models;
 using DataAccess.Repositories;
 using MdWebApplication.Interfaces.Repositories;
@@ -14,16 +16,18 @@ public class DocumentController : ControllerBase
 {
     private readonly DocumentService _documentService;
     private readonly IUsersRepository _usersRepository;
+    private readonly IUsersService _usersService;
 
     
-    public DocumentController(DocumentService documentService, IUsersRepository usersRepository)
+    public DocumentController(DocumentService documentService, IUsersRepository usersRepository, IUsersService usersService)
     {
         _documentService = documentService;
+        _usersService = usersService;
         _usersRepository = usersRepository;
     }
 
     [HttpPost("upload")]
-    public async Task<IActionResult> UploadDocumentAsync([FromForm] string file, [FromForm] string fileName, [FromQuery] Guid userId)
+    public async Task<IActionResult> UploadDocumentAsync([FromForm] string file, [FromForm] string fileName)
     {
         if (string.IsNullOrEmpty(file))
         {
@@ -37,7 +41,13 @@ public class DocumentController : ControllerBase
 
         try
         {
-            var user = await _usersRepository.GetById(userId);
+            var userId = await _usersService.GetUserIdFromToken(User);
+            if (userId is null)
+            {
+                return Unauthorized(new { error = "Incorrect token" });
+            }
+            
+            var user = await _usersRepository.GetById((Guid)userId);
             if (user == null)
             {
                 return NotFound("User not found.");
@@ -55,9 +65,14 @@ public class DocumentController : ControllerBase
 
 
     [HttpGet("download")]
-    public async Task<IActionResult> DownloadDocumentAsync([FromQuery]Guid userId, [FromQuery]string fileName)
+    public async Task<IActionResult> DownloadDocumentAsync([FromQuery]string fileName)
     {
-        var user = await _usersRepository.GetById(userId);
+        var userId = await _usersService.GetUserIdFromToken(User);
+        if (userId is null)
+        {
+            return Unauthorized(new { error = "Incorrect token" });
+        }
+        var user = await _usersRepository.GetById((Guid)userId);
         if (user == null)
         {
             return Unauthorized(new { error = "User not found" });
@@ -75,9 +90,15 @@ public class DocumentController : ControllerBase
 
 
     [HttpGet("all")]
-    public async Task<IActionResult> GetAllDocuments(Guid userId)
+    public async Task<IActionResult> GetAllDocuments()
     {
-        var user = await _usersRepository.GetUserWithDocuments(userId);
+        var userId = await _usersService.GetUserIdFromToken(User);
+        if (userId is null)
+        {
+            return Unauthorized(new { error = "Incorrect token" });
+        }
+        
+        var user = await _usersRepository.GetUserWithDocuments((Guid)userId);
         if (user == null)
         {
             return Unauthorized(new { error = "User not found" });

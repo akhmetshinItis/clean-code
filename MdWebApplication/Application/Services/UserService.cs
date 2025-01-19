@@ -1,7 +1,9 @@
+using System.Security.Claims;
 using Application.Interfaces.Services;
 using Core.Models;
 using Infrastructure;
 using MdWebApplication.Interfaces.Repositories;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MdWebApplication.Services;
 
@@ -23,7 +25,10 @@ public class UserService : IUsersService
         var hashedPassword = _passwordHasher.Generate(password);
 
         var user = User.Create(Guid.NewGuid(), userName, login, hashedPassword);
-
+        if (await _usersRepository.GetByLoginAsync(login) != null)
+        {
+            throw new InvalidOperationException("User with this login already exists.");
+        } 
         await _usersRepository.Add(user);
         
         return _jwtProvider.GenerateToken(user);
@@ -45,9 +50,16 @@ public class UserService : IUsersService
         return token;
     }
 
-    public async Task<Guid> GetUserId(string login)
+    public async Task<Guid?>GetUserIdFromToken(ClaimsPrincipal user)
     {
-        var user =  _usersRepository.GetByLoginAsync(login).Result.Id;
-        return user;
+        var userIdClaim = user.Claims.FirstOrDefault(x => x.Type == "userId")?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            return null; // Возвращаем null, если нет userId или он некорректен
+        }
+
+        return userId; // Возвращаем корректный userId
     }
+
 }

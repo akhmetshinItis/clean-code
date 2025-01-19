@@ -23,9 +23,16 @@ public class DocumentRepository : IDocumentRepository
             UserId = userId,
             FileUrl = fileUrl
         };
-
-        await _dbContext.AddAsync(document);
-        await _dbContext.SaveChangesAsync();
+        if (await _dbContext.Documents
+                .FirstOrDefaultAsync(x => x.FileName == fileName) != null)
+        {
+            _dbContext.Update(document);
+        }
+        else
+        {
+            await _dbContext.AddAsync(document);
+            await _dbContext.SaveChangesAsync();
+        }
     }
     
 }

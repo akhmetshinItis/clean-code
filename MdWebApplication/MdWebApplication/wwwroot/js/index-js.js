@@ -37,22 +37,15 @@ markdownEditor.on("change", async () => {
     }
 });
 
-// Функция для извлечения значения cookie по имени
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-}
-
 // Функция для скачивания документа
-async function downloadDocument(userId, fileName) {
+async function downloadDocument(fileName) {
     if (!fileName) {
         alert('File name is missing!');
         return;
     }
 
     try {
-        const response = await fetch(`/api/Document/download?userId=${userId}&fileName=${fileName}`, {
+        const response = await fetch(`/api/Document/download?fileName=${fileName}`, {
             method: 'GET',
         });
 
@@ -73,9 +66,8 @@ document.getElementById('save-form').addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const fileName = document.getElementById('save-file-name').value.trim();
-    const markdownContent = markdownEditor.getValue(); 
-    const userId = getCookie('userId');
-
+    const markdownContent = markdownEditor.getValue();
+    
     if (!fileName) {
         alert('Please enter a file name.');
         return;
@@ -86,17 +78,12 @@ document.getElementById('save-form').addEventListener('submit', async (e) => {
         return;
     }
 
-    if (!userId) {
-        alert('User ID is missing in cookies!');
-        return;
-    }
-
     try {
         const formData = new FormData();
         formData.append('file', markdownContent); // Добавляем содержимое Markdown
         formData.append('fileName', fileName); // Добавляем имя файла
 
-        const response = await fetch(`/api/Document/upload?userId=${userId}`, {
+        const response = await fetch(`/api/Document/upload`, {
             method: 'POST',
             body: formData,
         });
@@ -116,15 +103,8 @@ document.getElementById('save-form').addEventListener('submit', async (e) => {
 });
 
 document.getElementById('load-documents-btn').addEventListener('click', async () => {
-    const userId = getCookie('userId');
-
-    if (!userId) {
-        alert('User ID is missing in cookies!');
-        return;
-    }
-
     try {
-        const response = await fetch(`/api/Document/all?userId=${userId}`, { method: 'GET' });
+        const response = await fetch(`/api/Document/all`, { method: 'GET' });
 
         if (response.ok) {
             const documents = await response.json();
@@ -145,7 +125,7 @@ document.getElementById('load-documents-btn').addEventListener('click', async ()
                 downloadButtons.forEach(button => {
                     button.addEventListener('click', async (event) => {
                         const fileName = event.target.getAttribute('data-filename');
-                        await downloadDocument(userId, fileName);
+                        await downloadDocument(fileName);
                     });
                 });
                 

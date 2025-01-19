@@ -20,11 +20,16 @@ public class UserController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
     {
-        var token = await _usersService.Register(request.Username, request.Login, request.Password);
-        Response.Cookies.Append("tasty-cookies", token);
-        var id = await _usersService.GetUserId(request.Login);
-        Response.Cookies.Append("userId", id.ToString());
-        return Ok();
+        try
+        {
+            var token = await _usersService.Register(request.Username, request.Login, request.Password);
+            Response.Cookies.Append("tasty-cookies", token);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return Conflict(new { error = e.Message });
+        }
     }
 
     [HttpPost("login")]
@@ -32,8 +37,6 @@ public class UserController : ControllerBase
     {
         var token = await _usersService.Login(request.Login, request.Password);
         Response.Cookies.Append("tasty-cookies", token);
-        var id = await _usersService.GetUserId(request.Login);
-        Response.Cookies.Append("userId", id.ToString());
         return Ok();
     }
     
@@ -41,7 +44,6 @@ public class UserController : ControllerBase
     public IActionResult LogOut()
     {
         Response.Cookies.Delete("tasty-cookies");
-        Response.Cookies.Delete("userId");
         return Ok();
     }
 
