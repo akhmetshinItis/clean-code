@@ -1,0 +1,61 @@
+﻿version: "3.9"
+
+services:
+  mdwebapplication:
+    image: mdwebapplication
+    build:
+      context: .
+      dockerfile: MdWebApplication/Dockerfile
+    environment:
+      Minio__Endpoint: minio:9000
+      Minio__AccessKey: admin
+      Minio__SecretKey: admin123
+      DB__ConnectionString: "Host=postgres1;Port=5432;Database=TestDb;Username=postgres;Password=postgresmaster"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_started
+      minio:
+        condition: service_started
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres1
+    environment:
+      POSTGRES_DB: TestDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgresmaster
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  minio:
+    image: quay.io/minio/minio
+    container_name: minio2
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: admin123
+    volumes:
+      - ./data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  minio_data:
+    driver: local
