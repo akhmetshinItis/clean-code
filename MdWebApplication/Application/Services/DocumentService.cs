@@ -15,7 +15,7 @@ public class DocumentService
         _documentRepository = documentRepository;
     }
 
-    public async Task UploadDocumentAsync(string fileName, string file, Guid userId)
+    public async Task UploadDocumentAsync(string fileName, string userName,string file, Guid userId)
     {
         if (string.IsNullOrEmpty(file))
         {
@@ -27,13 +27,14 @@ public class DocumentService
         // Используем MemoryStream для передачи данных напрямую
         using (var memoryStream = new MemoryStream(fileBytes))
         {
+            var minioFileName = $"{userName}/{fileName}";
             // Загружаем файл на MinIO
-            var success = await _minioService.UploadFileAsync(memoryStream, fileName);
+            var success = await _minioService.UploadFileAsync(memoryStream, minioFileName);
 
             if (success)
             {
                 // Генерация URL MinIO для документа
-                var fileUrl = _minioService.GetFileUrl(fileName);
+                var fileUrl = _minioService.GetFileUrl(minioFileName);
 
                 // Сохраняем информацию о документе в базе данных через репозиторий
                 await _documentRepository.AddDocumentAsync(userId, fileName, fileUrl);

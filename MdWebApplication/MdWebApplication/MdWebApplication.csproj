@@ -24,6 +24,7 @@
       <ProjectReference Include="..\Application\Application.csproj" />
       <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
       <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+      <ProjectReference Include="..\Markdown\Markdown\Markdown\Markdown.csproj" />
     </ItemGroup>
 
 </Project>

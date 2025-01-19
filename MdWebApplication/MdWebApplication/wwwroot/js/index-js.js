@@ -45,17 +45,9 @@ function getCookie(name) {
 }
 
 // Функция для скачивания документа
-document.getElementById('download-btn').addEventListener('click', async () => {
-    const userId = getCookie('userId');  // Retrieve userId from cookies
-    const fileName = document.getElementById('file-name-input').value.trim();  // Get file name from input field
-
-    if (!userId) {
-        alert('User ID is missing in cookies!');
-        return;
-    }
-
+async function downloadDocument(userId, fileName) {
     if (!fileName) {
-        alert('Please enter a file name!');
+        alert('File name is missing!');
         return;
     }
 
@@ -66,7 +58,7 @@ document.getElementById('download-btn').addEventListener('click', async () => {
 
         if (response.ok) {
             const markdownContent = await response.text();
-            markdownEditor.setValue(markdownContent);
+            markdownEditor.setValue(markdownContent); // Отображение содержимого в редакторе
         } else {
             const error = await response.json();
             alert(`Error: ${error.error}`);
@@ -75,7 +67,7 @@ document.getElementById('download-btn').addEventListener('click', async () => {
         console.error('Failed to download document:', err);
         alert('An unexpected error occurred.');
     }
-});
+}
 
 document.getElementById('save-form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -123,3 +115,48 @@ document.getElementById('save-form').addEventListener('submit', async (e) => {
     }
 });
 
+document.getElementById('load-documents-btn').addEventListener('click', async () => {
+    const userId = getCookie('userId');
+
+    if (!userId) {
+        alert('User ID is missing in cookies!');
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/Document/all?userId=${userId}`, { method: 'GET' });
+
+        if (response.ok) {
+            const documents = await response.json();
+            const documentsList = document.getElementById('documents-list');
+
+            documentsList.innerHTML = '';
+
+            documents.forEach(doc => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <strong>${doc.documentName}</strong> -
+                    <input type="hidden" id="file-name-input" value="${doc.documentName}" style="margin-right: 10px;">
+                    <button class="download-btn" data-filename="${doc.documentName}" style="margin-top: 20px;">Download Document</button>
+                `;
+                documentsList.appendChild(listItem);
+
+                const downloadButtons = document.querySelectorAll('.download-btn');
+                downloadButtons.forEach(button => {
+                    button.addEventListener('click', async (event) => {
+                        const fileName = event.target.getAttribute('data-filename');
+                        await downloadDocument(userId, fileName);
+                    });
+                });
+                
+            });
+        } else {
+            const error = await response.json();
+            console.error('Error:', error.error);
+            alert('Failed to load documents: ' + error.error);
+        }
+    } catch (err) {
+        console.error('Failed to fetch documents:', err);
+        alert('Error fetching documents.');
+    }
+});

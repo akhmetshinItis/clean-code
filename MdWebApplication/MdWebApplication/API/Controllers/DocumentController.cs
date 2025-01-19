@@ -1,3 +1,4 @@
+using Core.Models;
 using DataAccess.Repositories;
 using MdWebApplication.Interfaces.Repositories;
 using MdWebApplication.Services;
@@ -43,8 +44,7 @@ public class DocumentController : ControllerBase
             }
 
             var userName = user.UserName;
-            var filename = $"{userName}/{fileName}";
-            await _documentService.UploadDocumentAsync(filename, file, user.Id);
+            await _documentService.UploadDocumentAsync(fileName, userName, file, user.Id);
             return Ok("File uploaded successfully.");
         }
         catch (Exception ex)
@@ -73,7 +73,23 @@ public class DocumentController : ControllerBase
         return Ok(document);
     }
 
-    
-    // [HttpGet("all")]
-    // public async Task<IActionResult> GetAllDocuments(Guid us)
+
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAllDocuments(Guid userId)
+    {
+        var user = await _usersRepository.GetUserWithDocuments(userId);
+        if (user == null)
+        {
+            return Unauthorized(new { error = "User not found" });
+        }
+
+        var documents = user.Documents.Select(doc => new DocumentVm
+        {
+            Id = doc.Id,
+            DocumentName = doc.FileName
+        });
+
+        return Ok(documents);
+    }
+
 }

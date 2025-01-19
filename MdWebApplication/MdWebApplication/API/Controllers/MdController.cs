@@ -1,4 +1,4 @@
-using Markdig;
+using Markdown.Classes;
 using MdWebApplication.API.Contracts.Md;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +16,9 @@ public class MdController : ControllerBase
             return BadRequest(new { error = "Markdown text is required." });
         }
 
-        var html = Markdown.ToHtml(request.Markdown);
+        //var html = Markdown.ToHtml(request.Markdown);
+        var mdProcessor = new MdProcessor();
+        var html = mdProcessor.GetHtmlFromMarkdown(request.Markdown);
         return Ok(new { html });
     }
 }

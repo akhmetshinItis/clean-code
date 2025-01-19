@@ -1,4 +1,5 @@
 using Core.Models;
+using DataAccess.Mappers;
 using DataAccess.Models;
 using MdWebApplication.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -22,14 +23,24 @@ public class UsersRepository : IUsersRepository
             .ToListAsync();
     }
 
-    public async Task<List<UserEntity>> GetWithDocuments()
+    public async Task<User> GetUserWithDocuments(Guid id)
     {
-        return await _dbContext.Users
+        var entity = await _dbContext.Users
             .AsNoTracking()
             .Include(c => c.Documents)
-            .ToListAsync();
+            .FirstOrDefaultAsync(x => x.Id == id);
+        return new User
+        {
+            Id = entity.Id,
+            Login = entity.Login,
+            PasswordHash = entity.PasswordHash,
+            UserName = entity.UserName,
+            Documents = entity.Documents.Select(x => DocumentMapper.MapToDocumentModel(x)).ToList(),
+        };
     }
-
+    
+    
+    // Исправлю позже
     public async Task<User> GetById(Guid id)
     {
         var userEntity = await _dbContext.Users
@@ -74,6 +85,7 @@ public class UsersRepository : IUsersRepository
             .ExecuteDeleteAsync();
     }
 
+    // Позже исправлю
     public async Task Add(User user)
     {
         var userEntity = new UserEntity
@@ -87,6 +99,7 @@ public class UsersRepository : IUsersRepository
         await _dbContext.SaveChangesAsync();
     }
 
+    // Исправлю позже
     public async Task<User?> GetByLoginAsync(string login)
     {
         if (string.IsNullOrWhiteSpace(login))

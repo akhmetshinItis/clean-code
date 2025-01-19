@@ -50,24 +50,6 @@ public class MinioService
             return false;
         }
     }
-
-    public async Task<bool> DownloadFileAsync(string objectName, string downloadFilePath)
-    {
-        try
-        {
-            await _minioClient.GetObjectAsync(new GetObjectArgs()
-                .WithBucket(_bucketName)
-                .WithObject(objectName)
-                .WithFile(downloadFilePath));
-
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error downloading file: {ex.Message}");
-            return false;
-        }
-    }
     
     public async Task<string> GetFileAsync(string objectName)
     {
@@ -106,5 +88,6 @@ public class MinioService
     {
         return $"https://{_endpoint}/{_bucketName}/{objectName}";
     }
+    
 }
 

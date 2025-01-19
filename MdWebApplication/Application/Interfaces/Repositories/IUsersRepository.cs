@@ -8,4 +8,6 @@ public interface IUsersRepository
     Task<User> GetByLoginAsync(string login);
 
     Task<User> GetById(Guid id);
+
+    Task<User> GetUserWithDocuments(Guid id);
 }
