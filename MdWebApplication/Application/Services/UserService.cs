@@ -18,13 +18,15 @@ public class UserService : IUsersService
         _jwtProvider = jwtProvider;
     }
     
-    public async Task Register(string userName, string login, string password)
+    public async Task<string> Register(string userName, string login, string password)
     {
         var hashedPassword = _passwordHasher.Generate(password);
 
         var user = User.Create(Guid.NewGuid(), userName, login, hashedPassword);
 
         await _usersRepository.Add(user);
+        
+        return _jwtProvider.GenerateToken(user);
     }
 
     public async Task<string> Login(string login, string password)

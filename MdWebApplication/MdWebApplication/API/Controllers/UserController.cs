@@ -20,7 +20,10 @@ public class UserController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
     {
-        await _usersService.Register(request.UserName, request.Login, request.Password);
+        var token = await _usersService.Register(request.Username, request.Login, request.Password);
+        Response.Cookies.Append("tasty-cookies", token);
+        var id = await _usersService.GetUserId(request.Login);
+        Response.Cookies.Append("userId", id.ToString());
         return Ok();
     }
 
@@ -33,4 +36,13 @@ public class UserController : ControllerBase
         Response.Cookies.Append("userId", id.ToString());
         return Ok();
     }
+    
+    [HttpPost("logout")]
+    public IActionResult LogOut()
+    {
+        Response.Cookies.Delete("tasty-cookies");
+        Response.Cookies.Delete("userId");
+        return Ok();
+    }
+
 }

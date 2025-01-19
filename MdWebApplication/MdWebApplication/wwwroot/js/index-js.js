@@ -160,3 +160,22 @@ document.getElementById('load-documents-btn').addEventListener('click', async ()
         alert('Error fetching documents.');
     }
 });
+
+document.getElementById('logout-btn').addEventListener('click', async () => {
+    try {
+        const response = await fetch('/api/user/logout', {
+            method: 'POST',
+        });
+
+        if (response.ok) {
+            alert('Logged out successfully');
+            // Опционально можно перенаправить пользователя на страницу входа
+            window.location.href = '/login';
+        } else {
+            alert('Failed to log out');
+        }
+    } catch (err) {
+        console.error('Error during logout:', err);
+        alert('An unexpected error occurred during logout.');
+    }
+});
