@@ -1,8 +1,6 @@
 using System.Security.Claims;
 using Application.Interfaces.Services;
 using Core.Models;
-using DataAccess.Repositories;
-using MdWebApplication.Interfaces.Repositories;
 using MdWebApplication.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,15 +13,13 @@ namespace MdWebApplication.API.Controllers;
 public class DocumentController : ControllerBase
 {
     private readonly DocumentService _documentService;
-    private readonly IUsersRepository _usersRepository;
     private readonly IUsersService _usersService;
 
     
-    public DocumentController(DocumentService documentService, IUsersRepository usersRepository, IUsersService usersService)
+    public DocumentController(DocumentService documentService, IUsersService usersService)
     {
         _documentService = documentService;
         _usersService = usersService;
-        _usersRepository = usersRepository;
     }
 
     [HttpPost("upload")]
@@ -47,7 +43,7 @@ public class DocumentController : ControllerBase
                 return Unauthorized(new { error = "Incorrect token" });
             }
             
-            var user = await _usersRepository.GetById((Guid)userId);
+            var user = await _usersService.GetUserById((Guid)userId);
             if (user == null)
             {
                 return NotFound("User not found.");
@@ -72,7 +68,7 @@ public class DocumentController : ControllerBase
         {
             return Unauthorized(new { error = "Incorrect token" });
         }
-        var user = await _usersRepository.GetById((Guid)userId);
+        var user = await _usersService.GetUserById((Guid)userId);
         if (user == null)
         {
             return Unauthorized(new { error = "User not found" });
@@ -98,7 +94,7 @@ public class DocumentController : ControllerBase
             return Unauthorized(new { error = "Incorrect token" });
         }
         
-        var user = await _usersRepository.GetUserWithDocuments((Guid)userId);
+        var user = await _usersService.GetUserWithDocuments((Guid)userId);
         if (user == null)
         {
             return Unauthorized(new { error = "User not found" });

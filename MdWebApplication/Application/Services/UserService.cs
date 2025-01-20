@@ -62,4 +62,13 @@ public class UserService : IUsersService
         return userId; // Возвращаем корректный userId
     }
 
+    public async Task<User> GetUserById(Guid id)
+    {
+        return await _usersRepository.GetById(id);
+    }
+
+    public async Task<User> GetUserWithDocuments(Guid id)
+    {
+        return await _usersRepository.GetUserWithDocuments(id);
+    }
 }
