@@ -5,7 +5,6 @@ using Infrastructure;
 using MdWebApplication.Interfaces.Repositories;
 using MdWebApplication.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using PI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,11 +15,10 @@ var services = builder.Services;
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 services.AddControllers();
-Console.WriteLine(configuration.GetConnectionString("AppDbContext"));
 services.AddDbContext<AppDbContext>(
     options =>
     {
-        options.UseNpgsql(configuration.GetConnectionString("AppDbContext"));
+        options.UseNpgsql(configuration.GetSection("ConnectionStrings:AppDbContext").Value);
     }
 );
 services.AddScoped<IUsersRepository, UsersRepository>();

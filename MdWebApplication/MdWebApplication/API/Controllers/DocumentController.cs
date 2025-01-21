@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Application.Interfaces.Services;
 using Core.Models;
 using MdWebApplication.Services;
@@ -83,6 +82,31 @@ public class DocumentController : ControllerBase
 
         return Ok(document);
     }
+    
+    
+    [HttpGet("load")]
+    public async Task<IActionResult> DownloadDocumentAsync([FromQuery]Guid id)
+    {
+        var userId = await _usersService.GetUserIdFromToken(User);
+        if (userId is null)
+        {
+            return Unauthorized(new { error = "Incorrect token" });
+        }
+        var user = await _usersService.GetUserById((Guid)userId);
+        if (user == null)
+        {
+            return Unauthorized(new { error = "User not found" });
+        }
+
+        var documentName = await _documentService.GetDocumentById(id);
+        var documentContent = await _documentService.DownloadDocument($"{user.UserName}/{documentName}");
+        if (documentName == null)
+        {
+            return NotFound(new { error = "Document not found" });
+        }
+
+        return Ok(documentContent);
+    }
 
 
     [HttpGet("all")]
@@ -109,4 +133,11 @@ public class DocumentController : ControllerBase
         return Ok(documents);
     }
 
+    [HttpDelete("delete")]
+    public async Task<IActionResult> DeleteDocument(string documentName)
+    {
+        await _documentService.DeleteDocument(documentName);
+        return Ok();
+    }
+    
 }

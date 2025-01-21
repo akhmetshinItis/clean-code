@@ -17,6 +17,10 @@ const htmlEditor = CodeMirror.fromTextArea(document.getElementById("html-editor"
 markdownEditor.on("change", async () => {
     const markdownInput = markdownEditor.getValue(); // Получаем содержимое Markdown редактора
     try {
+        if(isNullOrWhitespace(markdownInput)){
+            htmlEditor.setValue("");
+            return;
+        }
         const response = await fetch('/api/Md/convert', {
             method: 'POST',
             headers: {
@@ -117,7 +121,8 @@ document.getElementById('load-documents-btn').addEventListener('click', async ()
                 listItem.innerHTML = `
                     <strong>${doc.documentName}</strong> -
                     <input type="hidden" id="file-name-input" value="${doc.documentName}" style="margin-right: 10px;">
-                    <button class="download-btn" data-filename="${doc.documentName}" style="margin-top: 20px;">Download Document</button>
+                    <button class="download-btn" data-filename="${doc.documentName}" style="margin-top: 20px;">Load Document</button>
+                    <p style="color: wheat">Для тестов ${doc.id}</p>
                 `;
                 documentsList.appendChild(listItem);
 
@@ -159,3 +164,39 @@ document.getElementById('logout-btn').addEventListener('click', async () => {
         alert('An unexpected error occurred during logout.');
     }
 });
+
+document.addEventListener("DOMContentLoaded", function (){
+    const urlParams = new URLSearchParams(window.location.search);
+    const documentId = urlParams.get("document");
+    if(documentId){
+        downloadDocumentById(documentId);
+    }
+})
+
+async function downloadDocumentById(id) {
+    if (!id) {
+        alert('File id is missing!');
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/Document/load?id=${id}`, {
+            method: 'GET',
+        });
+
+        if (response.ok) {
+            const markdownContent = await response.text();
+            markdownEditor.setValue(markdownContent); // Отображение содержимого в редакторе
+        } else {
+            const error = await response.json();
+            alert(`Error: ${error.error}`);
+        }
+    } catch (err) {
+        console.error('Failed to download document:', err);
+        alert('An unexpected error occurred.');
+    }
+}
+
+function isNullOrWhitespace(s){
+    return s === null || s === '';
+}

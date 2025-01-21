@@ -1,6 +1,7 @@
 using System.Text;
 using Core.Models;
 using MdWebApplication.Interfaces.Repositories;
+using Document = System.Reflection.Metadata.Document;
 
 namespace MdWebApplication.Services;
 
@@ -41,9 +42,19 @@ public class DocumentService
         }
     }
 
-    public Task<string> DownloadDocument(string fileName)
+    public async Task<string> DownloadDocument(string documentName)
     {
-        return _minioService.GetFileAsync(fileName);
+        return await _minioService.GetFileAsync(documentName);
     }
-    
+
+    public Task DeleteDocument(string documentName)
+    {
+        return _documentRepository.DeleteDocument(documentName);
+    }
+
+    public async Task<string> GetDocumentById(Guid id)
+    { 
+        var document = await _documentRepository.GetDocumentById(id);
+        return document.FileName;
+    }
 }

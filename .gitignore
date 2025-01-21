@@ -4,3 +4,4 @@ obj/
 .DS_Store
 .idea/
 Folder.DotSettings.user
+.env

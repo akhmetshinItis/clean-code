@@ -1,4 +1,5 @@
 using Core.Models;
+using DataAccess.Mappers;
 using DataAccess.Models;
 using MdWebApplication.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ public class DocumentRepository : IDocumentRepository
             UserId = userId,
             FileUrl = fileUrl
         };
+        Console.WriteLine("id123" + document.Id);
         if (await _dbContext.Documents
                 .FirstOrDefaultAsync(x => x.FileName == fileName) != null)
         {
@@ -34,5 +36,19 @@ public class DocumentRepository : IDocumentRepository
             await _dbContext.SaveChangesAsync();
         }
     }
-    
+
+    public async Task DeleteDocument(string documentName)
+    {
+        var document = await _dbContext.Documents.FirstOrDefaultAsync(d => d.FileName == documentName);
+        if (document != null)
+        {
+            _dbContext.Documents.Remove(document);
+        }
+    }
+
+    public async Task<Document> GetDocumentById(Guid id)
+    {
+        var document = DocumentMapper.MapToDocumentModel(await _dbContext.Documents.FirstOrDefaultAsync(x => x.Id == id));
+        return document;
+    }
 }

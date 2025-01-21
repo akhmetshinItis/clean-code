@@ -1,46 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Markdown to HTML Converter</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/material.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/material.min.css"
+    />
+    <link rel="stylesheet" href="styles/index.css" />
+    <link rel="stylesheet" href="styles/reset.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Playfair+Display+SC:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Volkhov:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/markdown/markdown.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/xml/xml.min.js"></script>
-</head>
-<body>
-<h1>Markdown to HTML Converter</h1>
-<button onclick="location.href='/login'" style="margin-top: 20px;">Go to Login/Registration</button>
-<button id="logout-btn" style="margin-top: 20px;">Log Out</button>
-<div style="display: flex; gap: 20px;">
-    <!-- Markdown редактор -->
-    <div style="flex: 1;">
-        <h2>Markdown Input</h2>
+  </head>
+  <body>
+    <h1 class="title">Markdown to HTML Converter</h1>
+    <div class="buttons-container">
+      <button
+        class="accent-btn"
+        onclick="location.href='/login'"
+        style="margin-top: 20px"
+      >
+        Go to Login/Registration
+      </button>
+      <button class="accent-btn" id="logout-btn" style="margin-top: 20px">
+        Log Out
+      </button>
+    </div>
+
+    <div style="display: flex; gap: 20px; align-items: center">
+      <!-- Markdown редактор -->
+      <div style="flex: 1">
+        <h2 class="markdown-title">Markdown Input</h2>
         <textarea id="markdown-editor"></textarea>
-    </div>
-    <!-- HTML редактор -->
-    <div style="flex: 1;">
-        <h2>HTML Output</h2>
+      </div>
+
+      <div>
+        <form id="save-form">
+          <h2>Save Markdown to Storage</h2>
+          <input
+            class="file-input"
+            type="text"
+            id="save-file-name"
+            placeholder="Enter file name"
+            required
+            style="margin-right: 10px"
+          />
+          <button
+            class="transparent-btn"
+            type="submit"
+            style="margin-top: 10px"
+          >
+            Save Document
+          </button>
+        </form>
+      </div>
+
+      <!-- HTML редактор -->
+      <div style="flex: 1">
+        <h2 class="markdown-title">HTML Output</h2>
         <textarea id="html-editor"></textarea>
+      </div>
     </div>
-</div>
 
-<div>
-    <h2>Save Markdown to Storage</h2>
-    <form id="save-form">
-        <input type="text" id="save-file-name" placeholder="Enter file name" required style="margin-right: 10px;">
-        <button type="submit" style="margin-top: 10px;">Save Document</button>
-    </form>
-</div>
+    <div>
+      <h2 class="title-documents">User Documents</h2>
+      <button
+        class="transparent-btn"
+        id="load-documents-btn"
+        style="margin-bottom: 10px"
+      >
+        Load Documents
+      </button>
+      <ul id="documents-list"></ul>
+    </div>
 
-<div>
-    <h2>User Documents</h2>
-    <button id="load-documents-btn" style="margin-bottom: 10px;">Load Documents</button>
-    <ul id="documents-list"></ul>
-</div>
-
-<script src="/js/index-js.js"></script>
-</body>
+    <script src="/js/index-js.js"></script>
+  </body>
 </html>
