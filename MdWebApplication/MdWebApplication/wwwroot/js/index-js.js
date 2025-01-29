@@ -66,6 +66,30 @@ async function downloadDocument(fileName) {
     }
 }
 
+async function deleteDocument(fileName) {
+    if (!fileName) {
+        alert('File id is missing!');
+        return;
+    }
+    
+    try{
+        const response = await fetch(`/api/Document/delete?documentName=${fileName}`, {
+            method: 'DELETE',
+        })
+        if (response.ok) {
+            alert('Deleted!');
+        }
+        else{
+            alert('An unexpected error occurred.');
+        }
+    }
+    catch (err) {
+        console.error('Failed to delete document:', err);
+        alert('An unexpected error occurred.');
+    }
+    
+}
+
 document.getElementById('save-form').addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -122,6 +146,7 @@ document.getElementById('load-documents-btn').addEventListener('click', async ()
                     <strong>${doc.documentName}</strong> -
                     <input type="hidden" id="file-name-input" value="${doc.documentName}" style="margin-right: 10px;">
                     <button class="download-btn" data-filename="${doc.documentName}" style="margin-top: 20px;">Load Document</button>
+                    <button class="delete-btn" data-id="${doc.documentName}" style="margin-top: 20px;">Delete Document</button>
                     <p style="color: wheat">Для тестов ${doc.id}</p>
                 `;
                 documentsList.appendChild(listItem);
@@ -133,6 +158,14 @@ document.getElementById('load-documents-btn').addEventListener('click', async ()
                         await downloadDocument(fileName);
                     });
                 });
+                
+                const deleteButtons = document.querySelectorAll('.delete-btn');
+                deleteButtons.forEach(button => {
+                    button.addEventListener('click', async (event) => {
+                        const fileName = event.target.getAttribute('data-id');
+                        await deleteDocument(fileName);
+                    })
+                })
                 
             });
         } else {

@@ -10,7 +10,7 @@ services:
       MinIO__Endpoint:
       MinIO__AccessKey:
       MinIO__SecretKey:
-      ConnectionStrings__AppDbContext:
+      ConnectionStrings__AppDbContext: "Host=postgres1;Port=5432;Database=TestDb;Username=postgres;Password=postgresmaster"
     ports:
       - "8080:8080"
     depends_on:
@@ -45,7 +45,7 @@ services:
       MINIO_ROOT_USER:
       MINIO_ROOT_PASSWORD:
     volumes:
-      - ./data:/data
+      - /Users/tagirahmetsin/2nd course/dotnet/MdWebRepo/data:/data
     command: server /data --console-address ":9001"
     networks:
       - app-network

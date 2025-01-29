@@ -24,7 +24,6 @@ public class DocumentRepository : IDocumentRepository
             UserId = userId,
             FileUrl = fileUrl
         };
-        Console.WriteLine("id123" + document.Id);
         if (await _dbContext.Documents
                 .FirstOrDefaultAsync(x => x.FileName == fileName) != null)
         {
@@ -43,6 +42,7 @@ public class DocumentRepository : IDocumentRepository
         if (document != null)
         {
             _dbContext.Documents.Remove(document);
+            await _dbContext.SaveChangesAsync();
         }
     }
 
