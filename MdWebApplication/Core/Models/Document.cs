@@ -10,4 +10,6 @@ public class Document
     public string FileUrl { get; set; }
     
     public string FileName { get; set; }
+    
+    public bool IsSharing { get; set; }
 }

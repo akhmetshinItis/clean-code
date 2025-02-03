@@ -9,14 +9,17 @@ public class DocumentService
 {
     private readonly MinioService _minioService;
     private readonly IDocumentRepository _documentRepository;
+    private IUsersRepository _usersRepository;
 
-    public DocumentService(MinioService minioService, IDocumentRepository documentRepository)
+    public DocumentService(MinioService minioService, IDocumentRepository documentRepository,
+        IUsersRepository usersRepository)
     {
         _minioService = minioService;
         _documentRepository = documentRepository;
+        _usersRepository = usersRepository;
     }
 
-    public async Task UploadDocumentAsync(string fileName, string userName,string file, Guid userId)
+    public async Task UploadDocumentAsync(string fileName, string userName,string file, bool isSharing, Guid userId)
     {
         if (string.IsNullOrEmpty(file))
         {
@@ -37,7 +40,7 @@ public class DocumentService
                 // Генерация URL MinIO для документа
                 var fileUrl = _minioService.GetFileUrl(minioFileName);
                 // Сохраняем информацию о документе в базе данных через репозиторий
-                await _documentRepository.AddDocumentAsync(userId, fileName, fileUrl);
+                await _documentRepository.AddDocumentAsync(userId, fileName, fileUrl, isSharing);
             }
         }
     }
@@ -56,5 +59,18 @@ public class DocumentService
     { 
         var document = await _documentRepository.GetDocumentById(id);
         return document.FileName;
+    }
+    
+    public async Task<string> GetOwnersName(Guid id)
+    { 
+        var document = await _documentRepository.GetDocumentById(id);
+        var userName = await _usersRepository.GetById(document.UserId);
+        return userName.UserName;
+    }
+
+    public async Task<bool> IsDocumentSharing(Guid id)
+    {
+        var document = await _documentRepository.GetDocumentById(id);
+        return document.IsSharing;
     }
 }

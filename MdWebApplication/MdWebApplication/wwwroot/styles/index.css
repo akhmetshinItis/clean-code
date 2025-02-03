@@ -1,0 +1,92 @@
+* {
+  font-family: Poppins, sans-serif;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  background-color: rgb(6, 0, 7);
+  color: white;
+  padding: 0 30px;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url(../assets/images/background.png);
+  background-size: 100px;
+  opacity: 0.15;
+  z-index: -1;
+}
+
+input {
+  padding: 12px 30px;
+  border-radius: 12px;
+  font-size: 16px;
+  background-color: #10161d;
+  color: #999c9f;
+}
+
+li {
+  color: white;
+}
+
+.title {
+  padding: 20px 0;
+  text-align: center;
+}
+
+.markdown-title {
+  margin-bottom: 10px;
+}
+
+.transparent-btn {
+  background-color: transparent;
+  border-radius: 8px;
+  border: 1px solid #999c9f;
+  padding: 12px 20px;
+  color: #999c9f;
+  font-weight: 600;
+}
+
+.transparent-btn:hover {
+  background-color: rgba(153, 156, 159, 0.1);
+}
+
+.buttons-container {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.accent-btn {
+  padding: 8px 20px;
+  color: white;
+  background-color: transparent;
+  border: 1px solid #999c9f;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.accent-btn:active {
+  background-color: rgba(145, 133, 162, 0.1);
+}
+
+.title-documents {
+  margin: 10px 0;
+}
+
+.CodeMirror-scroll {
+  border: 1px solid #9500c7;
+}
+
+.file-input {
+  border: 1px solid #273646;
+}

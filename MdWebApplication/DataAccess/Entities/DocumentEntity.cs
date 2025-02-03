@@ -4,6 +4,7 @@ public class DocumentEntity
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
+    
     /// <summary>
     /// URL документа в MinIO
     /// </summary>
@@ -11,4 +12,6 @@ public class DocumentEntity
     public string FileName { get; set; }
 
     public UserEntity User { get; set; }
+    
+    public bool IsSharing { get; set; }
 }

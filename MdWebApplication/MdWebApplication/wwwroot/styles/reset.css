@@ -1,0 +1,40 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+li {
+  list-style-type: none;
+}
+
+button {
+  outline: none;
+  border: none;
+  background-color: transparent;
+  border-radius: 8px;
+  border: 1px solid #999c9f;
+  padding: 6px 10px;
+  color: #999c9f;
+  font-weight: 600;
+}
+
+button:hover {
+  background-color: rgba(153, 156, 159, 0.1);
+}
+
+img {
+  max-height: 100%;
+  max-width: 100%;
+  vertical-align: top;
+}
+
+input {
+  outline: none;
+  border: none;
+}

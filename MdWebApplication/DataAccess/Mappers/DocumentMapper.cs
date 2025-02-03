@@ -15,7 +15,8 @@ public class DocumentMapper
             Id = documentEntity.Id,
             UserId = documentEntity.UserId,
             FileUrl = documentEntity.FileUrl,
-            FileName = documentEntity.FileName
+            FileName = documentEntity.FileName,
+            IsSharing = documentEntity.IsSharing,
         };
     }
 }

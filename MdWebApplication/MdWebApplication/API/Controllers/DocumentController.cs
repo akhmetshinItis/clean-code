@@ -22,7 +22,8 @@ public class DocumentController : ControllerBase
     }
 
     [HttpPost("upload")]
-    public async Task<IActionResult> UploadDocumentAsync([FromForm] string file, [FromForm] string fileName)
+    public async Task<IActionResult> UploadDocumentAsync([FromForm] string file,
+        [FromForm] string fileName, [FromForm] bool isSharing)
     {
         if (string.IsNullOrEmpty(file))
         {
@@ -49,7 +50,7 @@ public class DocumentController : ControllerBase
             }
 
             var userName = user.UserName;
-            await _documentService.UploadDocumentAsync(fileName, userName, file, user.Id);
+            await _documentService.UploadDocumentAsync(fileName, userName, file, isSharing, user.Id);
             return Ok("File uploaded successfully.");
         }
         catch (Exception ex)
@@ -103,6 +104,27 @@ public class DocumentController : ControllerBase
         if (documentName == null)
         {
             return NotFound(new { error = "Document not found" });
+        }
+
+        return Ok(documentContent);
+    }
+    
+    
+    [HttpGet("shared")]
+    public async Task<IActionResult> DownloadSharedDocumentAsync([FromQuery]Guid id)
+    {
+        Console.WriteLine("loading shared document");
+        var documentName = await _documentService.GetDocumentById(id);
+        var userName = await _documentService.GetOwnersName(id);
+        var documentContent = await _documentService.DownloadDocument($"{userName}/{documentName}");
+        if (documentName == null)
+        {
+            return NotFound(new { error = "Document not found" });
+        }
+        Console.WriteLine(!await _documentService.IsDocumentSharing(id));
+        if (!await _documentService.IsDocumentSharing(id))
+        {
+            return NotFound(new { error = "Document sharing is not available" }); 
         }
 
         return Ok(documentContent);

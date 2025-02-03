@@ -95,7 +95,8 @@ document.getElementById('save-form').addEventListener('submit', async (e) => {
 
     const fileName = document.getElementById('save-file-name').value.trim();
     const markdownContent = markdownEditor.getValue();
-    
+    const isPublic = document.getElementById("is-public").checked;
+
     if (!fileName) {
         alert('Please enter a file name.');
         return;
@@ -109,7 +110,8 @@ document.getElementById('save-form').addEventListener('submit', async (e) => {
     try {
         const formData = new FormData();
         formData.append('file', markdownContent); // Добавляем содержимое Markdown
-        formData.append('fileName', fileName); // Добавляем имя файла
+        formData.append('fileName', fileName);// Добавляем имя файла
+        formData.append('isSharing', isPublic);
 
         const response = await fetch(`/api/Document/upload`, {
             method: 'POST',
@@ -213,7 +215,7 @@ async function downloadDocumentById(id) {
     }
 
     try {
-        const response = await fetch(`/api/Document/load?id=${id}`, {
+        const response = await fetch(`/api/Document/shared?id=${id}`, {
             method: 'GET',
         });
 

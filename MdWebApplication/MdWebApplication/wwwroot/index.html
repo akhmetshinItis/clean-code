@@ -48,17 +48,27 @@
         <form id="save-form">
           <h2>Save Markdown to Storage</h2>
           <input
-            class="file-input"
-            type="text"
-            id="save-file-name"
-            placeholder="Enter file name"
-            required
-            style="margin-right: 10px"
+                  class="file-input"
+                  type="text"
+                  id="save-file-name"
+                  placeholder="Enter file name"
+                  required
+                  style="margin-right: 10px"
           />
+          
+          <label for="is-public" style="display: block; margin-top: 10px;">
+            <input
+                    type="checkbox"
+                    id="is-public"
+                    name="is-public"
+            />
+            Публичный?
+          </label>
+
           <button
-            class="transparent-btn"
-            type="submit"
-            style="margin-top: 10px"
+                  class="transparent-btn"
+                  type="submit"
+                  style="margin-top: 10px"
           >
             Save Document
           </button>

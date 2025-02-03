@@ -44,14 +44,9 @@ public class UsersRepository : IUsersRepository
     public async Task<User> GetById(Guid id)
     {
         var userEntity = await _dbContext.Users
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == id);
-        return new User
-        {
-            Id = id,
-            UserName = userEntity.UserName,
-            PasswordHash = userEntity.PasswordHash
-        };
+            .FirstOrDefaultAsync(u => u.Id == id).ConfigureAwait(false);
+        var user = User.Create(userEntity.Id, userEntity.UserName, userEntity.Login, userEntity.PasswordHash);
+        return user;
     }
 
     public async Task Add(Guid id, string userName, string login, string passwordHash, List<DocumentEntity> documents)

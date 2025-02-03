@@ -11,6 +11,7 @@ public class User
 
     public static User Create(Guid id, string userName, string login, string passwordHash)
     {
-        return new User { Id = id, UserName = userName, Login = login, PasswordHash = passwordHash };
+        User user =  new Core.Models.User { Id = id, UserName = userName, Login = login, PasswordHash = passwordHash };
+        return user;
     }
 }

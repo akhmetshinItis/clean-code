@@ -12,6 +12,7 @@ public class DocumentConfiguration : IEntityTypeConfiguration<DocumentEntity>
         builder.Property(x => x.FileUrl);
         builder.Property(x => x.Id);
         builder.Property(x => x.FileName);
+        builder.Property(x => x.IsSharing).HasDefaultValue("false");
         
         builder.HasKey(d => d.Id);
         builder

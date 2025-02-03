@@ -15,14 +15,15 @@ public class DocumentRepository : IDocumentRepository
         _dbContext = dbContext;
     }
     
-    public async Task AddDocumentAsync(Guid userId, string fileName, string fileUrl)
+    public async Task AddDocumentAsync(Guid userId, string fileName, string fileUrl, bool isSharing)
     {
         var document = new DocumentEntity
         {
             Id = Guid.NewGuid(),
             FileName = fileName,
             UserId = userId,
-            FileUrl = fileUrl
+            FileUrl = fileUrl,
+            IsSharing = isSharing
         };
         if (await _dbContext.Documents
                 .FirstOrDefaultAsync(x => x.FileName == fileName) != null)
